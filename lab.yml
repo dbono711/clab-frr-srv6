@@ -17,6 +17,9 @@ topology:
         - r1/daemons:/etc/frr/daemons
         - r1/frr.conf:/etc/frr/frr.conf
         - r1/vtysh.conf:/etc/frr/vtysh.conf
+        - r1/r1.sh:/config/r1.sh
+      exec:
+        - bash /config/r1.sh
     
     ## r2
     r2:
@@ -27,6 +30,9 @@ topology:
         - r2/daemons:/etc/frr/daemons
         - r2/frr.conf:/etc/frr/frr.conf
         - r2/vtysh.conf:/etc/frr/vtysh.conf
+        - r2/r2.sh:/config/r2.sh
+      exec: 
+        - bash /config/r2.sh
   
     # PROVIDER CORE
     ## r3
@@ -68,6 +74,27 @@ topology:
         - r6/daemons:/etc/frr/daemons
         - r6/frr.conf:/etc/frr/frr.conf
         - r6/vtysh.conf:/etc/frr/vtysh.conf
+    
+    # CLIENTS
+    ## c1
+    c1:
+      kind: linux
+      image: wbitt/network-multitool:alpine-extra
+      mgmt-ipv4: 172.28.1.8
+      binds:
+        - clients/client1.sh:/tmp/client1.sh
+      exec:
+        - bash /tmp/client1.sh
+    
+    ## c2
+    c2:
+      kind: linux
+      image: wbitt/network-multitool:alpine-extra
+      mgmt-ipv4: 172.28.1.9
+      binds:
+        - clients/client2.sh:/tmp/client2.sh
+      exec:
+        - bash /tmp/client2.sh
 
   links:
 
@@ -88,3 +115,9 @@ topology:
     ## r2
     - endpoints: ["r2:eth1", "r5:eth3"]
     - endpoints: ["r2:eth2", "r6:eth3"]
+    
+    # CLIENTS
+    ## c1
+    - endpoints: ["c1:eth1", "r1:eth3"]
+    ## c2
+    - endpoints: ["c2:eth1", "r2:eth3"]
