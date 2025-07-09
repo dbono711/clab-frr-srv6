@@ -1,5 +1,4 @@
 #!/bin/bash
-echo "8021q" >> /etc/modules
 
 # create VLAN interface for RED service
 ip link add name eth1.10 link eth1 type vlan id 10

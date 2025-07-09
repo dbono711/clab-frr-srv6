@@ -44,6 +44,9 @@ topology:
         - r3/daemons:/etc/frr/daemons
         - r3/frr.conf:/etc/frr/frr.conf
         - r3/vtysh.conf:/etc/frr/vtysh.conf
+        - r3/r3.sh:/config/r3.sh
+      exec:
+        - bash /config/r3.sh
     
     ## r4
     r4:
@@ -54,6 +57,9 @@ topology:
         - r4/daemons:/etc/frr/daemons
         - r4/frr.conf:/etc/frr/frr.conf
         - r4/vtysh.conf:/etc/frr/vtysh.conf
+        - r4/r4.sh:/config/r4.sh
+      exec:
+        - bash /config/r4.sh    
     
     ## r5
     r5:
@@ -64,7 +70,10 @@ topology:
         - r5/daemons:/etc/frr/daemons
         - r5/frr.conf:/etc/frr/frr.conf
         - r5/vtysh.conf:/etc/frr/vtysh.conf
-     
+        - r5/r5.sh:/config/r5.sh
+      exec:
+        - bash /config/r5.sh     
+    
     ## r6
     r6:
       kind: linux
@@ -74,6 +83,9 @@ topology:
         - r6/daemons:/etc/frr/daemons
         - r6/frr.conf:/etc/frr/frr.conf
         - r6/vtysh.conf:/etc/frr/vtysh.conf
+        - r6/r6.sh:/config/r6.sh
+      exec:
+        - bash /config/r6.sh    
     
     # CLIENTS
     ## c1
