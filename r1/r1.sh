@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# enable VRF strict mode
-sysctl net.vrf.strict_mode=1
-
 # create SRv6 interface
 ip link add sr0 type dummy
 ip link set sr0 up
@@ -15,3 +12,6 @@ ip link set dev eth3.10 up
 ip link add dev RED type vrf table 10
 ip link set dev RED up
 ip link set dev eth3.10 master RED
+
+# enable VRF strict mode
+sysctl net.vrf.strict_mode=1
