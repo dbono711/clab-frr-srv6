@@ -4,6 +4,5 @@ __pycache__
 .venv/
 *.code-workspace
 clab-*
-log.txt
-logs.log
-setup.log
+logs/*.log
+logs/positions.yaml
