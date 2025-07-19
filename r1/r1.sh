@@ -18,6 +18,9 @@ ip link add dev RED type vrf table 10
 ip link set dev RED up
 ip link set dev eth3.10 master RED
 
+# enable VRF strict mode
+sysctl net.vrf.strict_mode=1
+
 # create VLAN interface for BLUE service
 ip link add name eth3.20 link eth3 type vlan id 20
 ip link set dev eth3.20 up
