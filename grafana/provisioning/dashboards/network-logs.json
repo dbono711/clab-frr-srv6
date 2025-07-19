@@ -22,48 +22,135 @@
   "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "loki",
-        "uid": "P8E80F9AEF21F6940"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
+      "collapsed": true,
       "gridPos": {
-        "h": 8,
+        "h": 1,
         "w": 24,
         "x": 0,
         "y": 0
       },
-      "id": 1,
-      "options": {
-        "dedupStrategy": "signature",
-        "enableInfiniteScrolling": false,
-        "enableLogDetails": true,
-        "prettifyLogMessage": true,
-        "showCommonLabels": true,
-        "showLabels": false,
-        "showTime": false,
-        "sortOrder": "Descending",
-        "wrapLogMessage": false
-      },
-      "pluginVersion": "12.0.2",
-      "targets": [
+      "id": 5,
+      "panels": [
         {
           "datasource": {
             "type": "loki",
             "uid": "P8E80F9AEF21F6940"
           },
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 1,
+          "options": {
+            "dedupStrategy": "signature",
+            "enableInfiniteScrolling": false,
+            "enableLogDetails": true,
+            "prettifyLogMessage": true,
+            "showCommonLabels": true,
+            "showLabels": false,
+            "showTime": false,
+            "sortOrder": "Descending",
+            "wrapLogMessage": false
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "P8E80F9AEF21F6940"
+              },
+              "direction": "backward",
+              "editorMode": "builder",
+              "expr": "{container_name=~\"$container\"} |= ``",
+              "queryType": "range",
+              "refId": "A"
+            }
+          ],
+          "title": "Recent Container Logs",
+          "type": "logs"
+        }
+      ],
+      "title": "Container Logs",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 4,
+      "panels": [],
+      "title": "Router Logs",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "P8E80F9AEF21F6940"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 2
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
           "direction": "backward",
-          "editorMode": "builder",
-          "expr": "{container_name=~\"$container\"} |= ``",
+          "editorMode": "code",
+          "expr": "sum by (protocol) (\n  count_over_time(\n    {service_name=\"router_logs\", filename=~\"$router\"}\n    | regexp `\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3} (?P<level>\\w+):\\s*(?P<protocol>\\w+)`\n    | protocol != \"\"\n    [${__range}]\n  )\n)",
+          "legendFormat": "{{protocol}}",
           "queryType": "range",
           "refId": "A"
         }
       ],
-      "title": "Recent Container Logs",
-      "type": "logs"
+      "title": "Total Count by Protocol",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -78,7 +165,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 9
       },
       "id": 2,
       "options": {
@@ -100,7 +187,7 @@
             "uid": "P8E80F9AEF21F6940"
           },
           "direction": "backward",
-          "editorMode": "builder",
+          "editorMode": "code",
           "expr": "{service_name=\"router_logs\", filename=~\"$router\"} |= ``",
           "queryType": "range",
           "refId": "A"
@@ -149,9 +236,7 @@
       {
         "allowCustomValue": false,
         "current": {
-          "text": [
-            "All"
-          ],
+          "text": "All",
           "value": [
             "$__all"
           ]
@@ -186,5 +271,5 @@
   "timezone": "browser",
   "title": "Network Logs",
   "uid": "aea4hom8dwetcf",
-  "version": 12
+  "version": 8
 }
