@@ -146,7 +146,7 @@ topology:
       ports:
         - 3000:3000
       env:
-        GF_SECURITY_ADMIN_PASSWORD: "dbono215admin"
+        GF_SECURITY_ADMIN_PASSWORD: "srv6labadmin"
         GF_USERS_ALLOW_SIGN_UP: "false"
 
   links:
