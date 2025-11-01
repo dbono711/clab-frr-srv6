@@ -29,17 +29,20 @@ graph TD
 
 ## Network Resources
 
-- The IPv4 loopback addresses of nodes r1 to r6 follow the format:
-  - x.x.x.x/32 for router rx (e.g., 1.1.1.1/32 for r1)
-- The IPv6 loopback addresses is derived from the SRv6 locator block
-  - 2001:db8:x::1/128 for SRv6 locator on router rx (e.g., 2001:db8:1::1/128 for r1)
+- SRv6 Locator Block:
+  - 2001:db8:x::/48, where x is the router number (e.g., 2001:db8:1::/48 for r1)
+  - USID format (micro-segment, format f3216)
+    - block-len 32 (SID SPACE: 2001:db::/24 + BLOCK ID: 08)
+    - node-len 16 (SET ID: 00 + NODE ID: 01)
+- The IPv4 loopback addresses are derived as follows:
+  - x.x.x.x/32, where x is the router number (e.g., 1.1.1.1/32 for r1)
+- The IPv6 loopback addresses are derived from the SRv6 locator block
+  - So, if the locator block on router r1 is 2001:db8:1::/48, then the loopback address is 2001:db8:1::1/128
 - The interface addresses are IPv6 and follow the format:
   - 2001:c0de:1:y::z/64 where y and z vary per link
-- All routers are part of ISIS Level 2 with IS-IS NET addresses following the format 49.0001.0000.0000.000x.00
+- All routers are part of ISIS Level 2 with IS-IS NET addresses following the format:
+  - 49.0001.xxxx.xxxx.xxxx.00, where x is the router number (e.g., 49.0001.1111.1111.1111.00 for r1)
 - BGP is configured on the PEs (r1 and r2) with ASN 65000
-- SRv6 is configured with:
-  - Locator blocks using 2001:db8:x::/48 prefix
-  - USID format (micro-segment) with block-len 32, node-len 16, func-bits 16
 
 ### Management Network
 
