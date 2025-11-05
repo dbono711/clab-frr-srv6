@@ -7,8 +7,8 @@
       "id": "pe1",
       "icon": "router",
       "position": {
-        "x": -49,
-        "y": 91
+        "x": -175,
+        "y": 7
       },
       "geoCoordinates": {
         "lat": 48.684826888402256,
@@ -16,11 +16,23 @@
       }
     },
     {
-      "id": "p1",
+      "id": "pe2",
       "icon": "router",
       "position": {
         "x": 63,
-        "y": 49
+        "y": 77
+      },
+      "geoCoordinates": {
+        "lat": 48.834826888402254,
+        "lng": 9.332895390625676
+      }
+    },
+    {
+      "id": "p1",
+      "icon": "router",
+      "position": {
+        "x": -105,
+        "y": 7
       },
       "geoCoordinates": {
         "lat": 48.88482688840226,
@@ -28,11 +40,47 @@
       }
     },
     {
+      "id": "p2",
+      "icon": "router",
+      "position": {
+        "x": -7,
+        "y": 7
+      },
+      "geoCoordinates": {
+        "lat": 49.03482688840226,
+        "lng": 9.532895390625677
+      }
+    },
+    {
+      "id": "p3",
+      "icon": "router",
+      "position": {
+        "x": -105,
+        "y": 77
+      },
+      "geoCoordinates": {
+        "lat": 49.23482688840225,
+        "lng": 9.732895390625677
+      }
+    },
+    {
+      "id": "p4",
+      "icon": "router",
+      "position": {
+        "x": -7,
+        "y": 77
+      },
+      "geoCoordinates": {
+        "lat": 49.434826888402256,
+        "lng": 9.932895390625676
+      }
+    },
+    {
       "id": "rrv4",
       "icon": "router",
       "position": {
-        "x": -77,
-        "y": 49
+        "x": -63,
+        "y": -21
       },
       "geoCoordinates": {
         "lat": 49.084826888402254,
@@ -43,12 +91,24 @@
       "id": "c1",
       "icon": "router",
       "position": {
-        "x": -7,
-        "y": 133
+        "x": -245,
+        "y": 7
       },
       "geoCoordinates": {
         "lat": 48.684826888402256,
         "lng": 9.007895390625677
+      }
+    },
+    {
+      "id": "c2",
+      "icon": "router",
+      "position": {
+        "x": 133,
+        "y": 77
+      },
+      "geoCoordinates": {
+        "lat": 49.63482688840225,
+        "lng": 9.232895390625677
       }
     }
   ]
