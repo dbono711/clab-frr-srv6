@@ -7,7 +7,7 @@
       "id": "pe1",
       "icon": "router",
       "position": {
-        "x": -175,
+        "x": -161,
         "y": 7
       },
       "geoCoordinates": {
@@ -19,7 +19,7 @@
       "id": "pe2",
       "icon": "router",
       "position": {
-        "x": 63,
+        "x": 49,
         "y": 77
       },
       "geoCoordinates": {
@@ -91,7 +91,7 @@
       "id": "c1",
       "icon": "router",
       "position": {
-        "x": -245,
+        "x": -203,
         "y": 7
       },
       "geoCoordinates": {
@@ -103,7 +103,7 @@
       "id": "c2",
       "icon": "router",
       "position": {
-        "x": 133,
+        "x": 91,
         "y": 77
       },
       "geoCoordinates": {

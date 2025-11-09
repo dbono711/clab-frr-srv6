@@ -12,8 +12,8 @@ sysctl -w net.mpls.platform_labels=1048575
 sysctl -w net.mpls.conf.eth1.input=1
 
 # # create SRv6 interface
-# ip link add sr0 type dummy
-# ip link set sr0 up
+ip link add sr0 type dummy
+ip link set sr0 up
 
 # create VLAN interface for RED service
 ip link add name eth3.10 link eth3 type vlan id 10

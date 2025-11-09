@@ -104,12 +104,25 @@ topology:
       exec:
         - bash /config/rrv4.sh
     
+    # rrv6
+    rrv6:
+      kind: linux
+      mgmt-ipv4: 172.28.1.9
+      binds:
+        - logs:/etc/frr/logs
+        - rrv6/daemons:/etc/frr/daemons
+        - rrv6/frr.conf:/etc/frr/frr.conf
+        - rrv6/vtysh.conf:/etc/frr/vtysh.conf
+        - rrv6/rrv6.sh:/config/rrv6.sh
+      exec:
+        - bash /config/rrv6.sh
+    
     # CLIENTS
     ## c1
     c1:
       kind: linux
       image: wbitt/network-multitool:alpine-extra
-      mgmt-ipv4: 172.28.1.9
+      mgmt-ipv4: 172.28.1.10
       binds:
         - clients/client1.sh:/tmp/client1.sh
       exec:
@@ -119,16 +132,16 @@ topology:
     c2:
       kind: linux
       image: wbitt/network-multitool:alpine-extra
-      mgmt-ipv4: 172.28.1.10
+      mgmt-ipv4: 172.28.1.11
       binds:
         - clients/client2.sh:/tmp/client2.sh
       exec:
         - bash /tmp/client2.sh
 
-    # # LOGGING STACK
+    # # LOGGING
     # promtail:
     #   kind: linux
-    #   mgmt-ipv4: 172.28.1.11
+    #   mgmt-ipv4: 172.28.1.12
     #   image: grafana/promtail:3.5.2
     #   binds:
     #     - promtail:/etc/promtail
@@ -139,18 +152,32 @@ topology:
 
     # loki:
     #   kind: linux
-    #   mgmt-ipv4: 172.28.1.12
+    #   mgmt-ipv4: 172.28.1.13
     #   image: grafana/loki:3.5.2
     #   binds:
     #     - loki:/etc/loki
     #   cmd: --config.file=/etc/loki/loki-config.yml
     #   ports:
     #     - 3100:3100
-    
-    # # MONITORING STACK
+
+    # # TIME SERIES DATABASE
+    # prometheus:
+    #   kind: linux
+    #   mgmt-ipv4: 172.28.1.14
+    #   image: prom/prometheus:v3.0.0
+    #   binds:
+    #     - prometheus_data:/prometheus
+    #     - ./prometheus:/etc/prometheus/
+    #   cmd:
+    #     - --config.file=/etc/promtail/promtail-config.yml
+    #     - --storage.tsdb.path=/prometheus
+    #   ports:
+    #     - 9090:9090
+
+    # # VISUALIZATION
     # grafana:
     #   kind: linux
-    #   mgmt-ipv4: 172.28.1.13
+    #   mgmt-ipv4: 172.28.1.15
     #   image: grafana/grafana:12.0.2
     #   binds:
     #     - grafana/provisioning:/etc/grafana/provisioning
@@ -177,6 +204,10 @@ topology:
     - endpoints: ["p1:eth4", "rrv4:eth1"]
     ## p2-rrv4
     - endpoints: ["p2:eth4", "rrv4:eth2"]
+    # ## p3-rrv6
+    - endpoints: ["p3:eth4", "rrv6:eth1"]
+    # ## p4-rrv6
+    - endpoints: ["p4:eth4", "rrv6:eth2"]
 
     # EDGE
     ## pe1-p1
