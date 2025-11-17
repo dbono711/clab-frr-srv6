@@ -14,5 +14,5 @@ sysctl -w net.mpls.conf.eth2.input=1
 sysctl -w net.mpls.conf.eth3.input=1
 
 # create SRv6 interface
-ip link add sr0 type dummy
-ip link set sr0 up
+# ip link add sr0 type dummy
+# ip link set sr0 up

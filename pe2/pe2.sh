@@ -23,6 +23,3 @@ ip link set dev eth3.10 up
 ip link add dev RED type vrf table 10
 ip link set dev RED up
 ip link set dev eth3.10 master RED
-
-# enable VRF strict mode
-# sysctl net.vrf.strict_mode=1

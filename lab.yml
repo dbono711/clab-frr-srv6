@@ -7,7 +7,7 @@ mgmt:
 topology:
   kinds:
     linux:
-      image: quay.io/frrouting/frr:10.4.1
+      image: quay.io/frrouting/frr:10.5.0
   nodes:
 
     # PROVIDER EDGE
@@ -202,12 +202,8 @@ topology:
     # ROUTE REFLECTOR
     ## p1-rrv4
     - endpoints: ["p1:eth4", "rrv4:eth1"]
-    ## p2-rrv4
-    - endpoints: ["p2:eth4", "rrv4:eth2"]
-    # ## p3-rrv6
-    - endpoints: ["p3:eth4", "rrv6:eth1"]
-    # ## p4-rrv6
-    - endpoints: ["p4:eth4", "rrv6:eth2"]
+    ## p2-rrv6
+    - endpoints: ["p2:eth4", "rrv6:eth1"]
 
     # EDGE
     ## pe1-p1
