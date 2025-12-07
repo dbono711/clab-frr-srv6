@@ -138,29 +138,29 @@ topology:
       exec:
         - bash /tmp/client2.sh
 
-    # # LOGGING
-    # promtail:
-    #   kind: linux
-    #   mgmt-ipv4: 172.28.1.12
-    #   image: grafana/promtail:3.5.2
-    #   binds:
-    #     - promtail:/etc/promtail
-    #     - logs:/var/log
-    #   cmd: --config.file=/etc/promtail/promtail-config.yml
-    #   ports:
-    #     - 9080:9080
+    # LOGGING
+    promtail:
+      kind: linux
+      mgmt-ipv4: 172.28.1.12
+      image: grafana/promtail:3.5.2
+      binds:
+        - promtail:/etc/promtail
+        - logs:/var/log
+      cmd: --config.file=/etc/promtail/promtail-config.yml
+      ports:
+        - 9080:9080
 
-    # loki:
-    #   kind: linux
-    #   mgmt-ipv4: 172.28.1.13
-    #   image: grafana/loki:3.5.2
-    #   binds:
-    #     - loki:/etc/loki
-    #   cmd: --config.file=/etc/loki/loki-config.yml
-    #   ports:
-    #     - 3100:3100
+    loki:
+      kind: linux
+      mgmt-ipv4: 172.28.1.13
+      image: grafana/loki:3.5.2
+      binds:
+        - loki:/etc/loki
+      cmd: --config.file=/etc/loki/loki-config.yml
+      ports:
+        - 3100:3100
 
-    # # TIME SERIES DATABASE
+    # TIME SERIES DATABASE
     # prometheus:
     #   kind: linux
     #   mgmt-ipv4: 172.28.1.14
@@ -174,18 +174,18 @@ topology:
     #   ports:
     #     - 9090:9090
 
-    # # VISUALIZATION
-    # grafana:
-    #   kind: linux
-    #   mgmt-ipv4: 172.28.1.15
-    #   image: grafana/grafana:12.0.2
-    #   binds:
-    #     - grafana/provisioning:/etc/grafana/provisioning
-    #   ports:
-    #     - 3000:3000
-    #   env:
-    #     GF_SECURITY_ADMIN_PASSWORD: "srv6labadmin"
-    #     GF_USERS_ALLOW_SIGN_UP: "false"
+    # VISUALIZATION
+    grafana:
+      kind: linux
+      mgmt-ipv4: 172.28.1.15
+      image: grafana/grafana:12.0.2
+      binds:
+        - grafana/provisioning:/etc/grafana/provisioning
+      ports:
+        - 3000:3000
+      env:
+        GF_SECURITY_ADMIN_PASSWORD: "srv6labadmin"
+        GF_USERS_ALLOW_SIGN_UP: "false"
 
   links:
 

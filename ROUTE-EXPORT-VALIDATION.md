@@ -137,13 +137,13 @@ debug bgp srv6
 ## Key Configuration Points
 
 ### For MPLS VPN:
-- `label vpn export auto` in VRF address-family
+- `label vpn export auto` in BGP VRF address-family
 - LDP session to remote PE
 - MPLS label forwarding path established
 
 ### For SRv6 VPN:
-- `sid vpn export auto` in VRF BGP configuration
-- `segment-routing srv6 locator Loc0` in VRF BGP
+- `sid vpn export auto` in BGP VRF address-family
+- `segment-routing srv6 locator Loc0` in BGP VRF
 - `neighbor <rrv6> encapsulation srv6` in global BGP
 - SRv6 locator configured and operational
 

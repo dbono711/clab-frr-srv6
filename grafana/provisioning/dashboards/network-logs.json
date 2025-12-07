@@ -224,7 +224,7 @@
     }
   ],
   "preload": false,
-  "refresh": "10s",
+  "refresh": "5s",
   "schemaVersion": 41,
   "tags": [],
   "templating": {
@@ -233,10 +233,10 @@
         "allowCustomValue": false,
         "current": {
           "text": [
-            "All"
+            "/var/log/pe1.log"
           ],
           "value": [
-            "$__all"
+            "/var/log/pe1.log"
           ]
         },
         "datasource": {
@@ -256,18 +256,18 @@
           "type": 1
         },
         "refresh": 1,
-        "regex": "/.*r[1-6].log/",
+        "regex": "/.*[p|e][1-6].log/",
         "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Network Logs",
   "uid": "aea4hom8dwetcf",
-  "version": 10
+  "version": 2
 }

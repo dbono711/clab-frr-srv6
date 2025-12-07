@@ -7,7 +7,7 @@
       "id": "pe1",
       "icon": "router",
       "position": {
-        "x": -161,
+        "x": -175,
         "y": 7
       },
       "geoCoordinates": {
@@ -19,7 +19,7 @@
       "id": "pe2",
       "icon": "router",
       "position": {
-        "x": 49,
+        "x": 63,
         "y": 77
       },
       "geoCoordinates": {
@@ -79,8 +79,8 @@
       "id": "rrv4",
       "icon": "router",
       "position": {
-        "x": -63,
-        "y": -21
+        "x": -105,
+        "y": -35
       },
       "geoCoordinates": {
         "lat": 49.084826888402254,
@@ -88,10 +88,22 @@
       }
     },
     {
+      "id": "rrv6",
+      "icon": "router",
+      "position": {
+        "x": -7,
+        "y": -35
+      },
+      "geoCoordinates": {
+        "lat": 49.057049110624476,
+        "lng": 9.510673168403454
+      }
+    },
+    {
       "id": "c1",
       "icon": "router",
       "position": {
-        "x": -203,
+        "x": -245,
         "y": 7
       },
       "geoCoordinates": {
@@ -103,12 +115,48 @@
       "id": "c2",
       "icon": "router",
       "position": {
-        "x": 91,
+        "x": 133,
         "y": 77
       },
       "geoCoordinates": {
         "lat": 49.63482688840225,
         "lng": 9.232895390625677
+      }
+    },
+    {
+      "id": "promtail",
+      "icon": "router",
+      "position": {
+        "x": 7,
+        "y": 7
+      },
+      "geoCoordinates": {
+        "lat": 49.057049110624476,
+        "lng": 9.520673168403453
+      }
+    },
+    {
+      "id": "loki",
+      "icon": "router",
+      "position": {
+        "x": 7,
+        "y": 7
+      },
+      "geoCoordinates": {
+        "lat": 49.25704911062448,
+        "lng": 9.720673168403454
+      }
+    },
+    {
+      "id": "grafana",
+      "icon": "router",
+      "position": {
+        "x": 7,
+        "y": 7
+      },
+      "geoCoordinates": {
+        "lat": 49.457049110624475,
+        "lng": 9.920673168403454
       }
     }
   ]

@@ -30,14 +30,14 @@ graph TD
 ## Network Resources
 
 - SRv6 Locator Block:
-  - 2001:db8:x::/48, where x is the router number (e.g., 2001:db8:1::/48 for r1)
+  - fcdd:dd00:01xx::/48, where x is the node ID (e.g., fcdd:dd00:0101::/48 for pe1)
   - USID format (micro-segment, format f3216)
-    - block-len 32 (SID SPACE: 2001:db::/24 + BLOCK ID: 08)
+    - block-len 32 (SID SPACE: fcdd:dd00:01xx::/24 + BLOCK ID: 08)
     - node-len 16 (SET ID: 00 + NODE ID: 01)
 - The IPv4 loopback addresses are derived as follows:
   - x.x.x.x/32, where x is the router number (e.g., 1.1.1.1/32 for r1)
 - The IPv6 loopback addresses are derived from the SRv6 locator block
-  - So, if the locator block on router r1 is 2001:db8:1::/48, then the loopback address is 2001:db8:1::1/128
+  - So, if the locator block on router r1 is fcdd:dd00:0101::/48, then the loopback address is fcdd:dd00:0101::1/128
 - The interface addresses are IPv6 and follow the format:
   - 2001:c0de:1:y::z/64 where y and z vary per link
 - All routers are part of ISIS Level 2 with IS-IS NET addresses following the format:
