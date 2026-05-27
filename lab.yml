@@ -7,7 +7,7 @@ mgmt:
 topology:
   kinds:
     linux:
-      image: quay.io/frrouting/frr:10.5.0
+      image: quay.io/frrouting/frr:10.6.1
   nodes:
 
     # PROVIDER EDGE
@@ -23,7 +23,7 @@ topology:
         - pe1/pe1.sh:/config/pe1.sh
       exec:
         - bash /config/pe1.sh
-    
+
     # pe2
     pe2:
       kind: linux
@@ -34,9 +34,9 @@ topology:
         - pe2/frr.conf:/etc/frr/frr.conf
         - pe2/vtysh.conf:/etc/frr/vtysh.conf
         - pe2/pe2.sh:/config/pe2.sh
-      exec: 
+      exec:
         - bash /config/pe2.sh
-  
+
     # PROVIDER CORE
     # p1
     p1:
@@ -50,7 +50,7 @@ topology:
         - p1/p1.sh:/config/p1.sh
       exec:
         - bash /config/p1.sh
-    
+
     # p2
     p2:
       kind: linux
@@ -63,7 +63,7 @@ topology:
         - p2/p2.sh:/config/p2.sh
       exec:
         - bash /config/p2.sh
-    
+
     # p3
     p3:
       kind: linux
@@ -75,8 +75,8 @@ topology:
         - p3/vtysh.conf:/etc/frr/vtysh.conf
         - p3/p3.sh:/config/p3.sh
       exec:
-        - bash /config/p3.sh     
-    
+        - bash /config/p3.sh
+
     # p4
     p4:
       kind: linux
@@ -89,7 +89,7 @@ topology:
         - p4/p4.sh:/config/p4.sh
       exec:
         - bash /config/p4.sh
-    
+
     # ROUTE REFLECTOR
     ## rrv4
     rrv4:
@@ -103,7 +103,7 @@ topology:
         - rrv4/rrv4.sh:/config/rrv4.sh
       exec:
         - bash /config/rrv4.sh
-    
+
     # rrv6
     rrv6:
       kind: linux
@@ -116,7 +116,7 @@ topology:
         - rrv6/rrv6.sh:/config/rrv6.sh
       exec:
         - bash /config/rrv6.sh
-    
+
     # CLIENTS
     ## c1
     c1:
@@ -127,7 +127,7 @@ topology:
         - clients/client1.sh:/tmp/client1.sh
       exec:
         - bash /tmp/client1.sh
-    
+
     # c2
     c2:
       kind: linux
@@ -139,26 +139,26 @@ topology:
         - bash /tmp/client2.sh
 
     # LOGGING
-    promtail:
-      kind: linux
-      mgmt-ipv4: 172.28.1.12
-      image: grafana/promtail:3.5.2
-      binds:
-        - promtail:/etc/promtail
-        - logs:/var/log
-      cmd: --config.file=/etc/promtail/promtail-config.yml
-      ports:
-        - 9080:9080
+    # promtail:
+    #   kind: linux
+    #   mgmt-ipv4: 172.28.1.12
+    #   image: grafana/promtail:3.5.2
+    #   binds:
+    #     - promtail:/etc/promtail
+    #     - logs:/var/log
+    #   cmd: --config.file=/etc/promtail/promtail-config.yml
+    #   ports:
+    #     - 9080:9080
 
-    loki:
-      kind: linux
-      mgmt-ipv4: 172.28.1.13
-      image: grafana/loki:3.5.2
-      binds:
-        - loki:/etc/loki
-      cmd: --config.file=/etc/loki/loki-config.yml
-      ports:
-        - 3100:3100
+    # loki:
+    #   kind: linux
+    #   mgmt-ipv4: 172.28.1.13
+    #   image: grafana/loki:3.5.2
+    #   binds:
+    #     - loki:/etc/loki
+    #   cmd: --config.file=/etc/loki/loki-config.yml
+    #   ports:
+    #     - 3100:3100
 
     # TIME SERIES DATABASE
     # prometheus:
@@ -175,17 +175,17 @@ topology:
     #     - 9090:9090
 
     # VISUALIZATION
-    grafana:
-      kind: linux
-      mgmt-ipv4: 172.28.1.15
-      image: grafana/grafana:12.0.2
-      binds:
-        - grafana/provisioning:/etc/grafana/provisioning
-      ports:
-        - 3000:3000
-      env:
-        GF_SECURITY_ADMIN_PASSWORD: "srv6labadmin"
-        GF_USERS_ALLOW_SIGN_UP: "false"
+    # grafana:
+    #   kind: linux
+    #   mgmt-ipv4: 172.28.1.15
+    #   image: grafana/grafana:12.0.2
+    #   binds:
+    #     - grafana/provisioning:/etc/grafana/provisioning
+    #   ports:
+    #     - 3000:3000
+    #   env:
+    #     GF_SECURITY_ADMIN_PASSWORD: "srv6labadmin"
+    #     GF_USERS_ALLOW_SIGN_UP: "false"
 
   links:
 
@@ -210,7 +210,7 @@ topology:
     - endpoints: ["pe1:eth1", "p1:eth1"]
     ## pe2-p4
     - endpoints: ["pe2:eth1", "p4:eth3"]
-    
+
     # CLIENTS
     ## c1-pe1
     - endpoints: ["c1:eth1", "pe1:eth3"]

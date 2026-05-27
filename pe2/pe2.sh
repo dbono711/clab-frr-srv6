@@ -15,10 +15,10 @@ sysctl -w net.mpls.conf.eth1.input=1
 ip link add sr0 type dummy
 ip link set sr0 up
 
-# sysctl -w net.ipv6.conf.default.seg6_enabled=1
-# sysctl -w net.ipv6.conf.all.seg6_enabled=1
-# sysctl -w net.ipv6.conf.sr0.seg6_enabled=1
-# sysctl -w net.ipv6.conf.eth1.seg6_enabled=1
+# The Linux kernel resets net.vrf.strict_mode to 0 whenever a
+# new VRF is created or the system restarts, which prevents FRR
+# from installing End.DT4
+sysctl -w net.vrf.strict_mode=1
 
 # create VLAN interface for RED service
 ip link add name eth3.10 link eth3 type vlan id 10

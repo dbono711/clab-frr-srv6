@@ -1,6 +1,6 @@
 # BGP VPN Route Export Validation - Complete Flow
 
-This document outlines the step-by-step validation process from VRF route installation to BGP advertisement for MPLS L3VPN and SRv6-based VPN services. This will be the from the perspective of the PE1 router, specifically for the 10.10.1.0/30 route in the RED VRF, connected to the CE1 router.
+This document outlines the step-by-step validation process from VRF route installation to BGP advertisement for MPLS L3VPN and SRv6-based VPN services. This will be the from the perspective of the pe1 router, specifically for the 10.10.1.0/30 route in the RED VRF, connected to client1.
 
 ## Step 1: Verify route is in VRF routing table
 ```bash
@@ -21,76 +21,63 @@ show bgp vrf RED ipv4 unicast 10.10.1.0/30
 
 ---
 
-## Step 3: Verify VPN label/SID allocation
+## Step 3: Verify VPN SID allocation in global VPNv4 table
 ```bash
-show bgp ipv4 vpn rd 1.1.1.1:10 10.10.1.0/30
+show bgp ipv4 vpn rd 172.16.0.1:10 10.10.1.0/30
 ```
 **Look for:**
-- `Remote label: 80` (MPLS label if `label vpn export auto`)
-- `Remote SID: 2001:db8:1::, sid structure=[32 16 16 0 16 48]` (SRv6 SID if `sid vpn export auto`)
+- Origin incomplete, metric 0, weight 32768, valid, sourced, local, best (First path received)
+- Remote SID: fcdd:dd00:101::, sid structure=[32 16 16 0 16 48]
 - Extended Community: RT:65000:10
 
 ---
 
-## Step 4: Verify route is in global VPNv4 table
-```bash
-show bgp ipv4 vpn rd 1.1.1.1:10 10.10.1.0/30
-```
-**Look for:**
-- `Remote label: 80` (MPLS label if `label vpn export auto`)
-- `Remote SID: 2001:db8:1::, sid structure=[32 16 16 0 16 48]` (SRv6 SID if `sid vpn export auto`)
-- Extended Community: RT:65000:10
-- One of these will be selected best
-
----
-
-## Step 5: Verify BGP session state
+## Step 4: Verify BGP session state
 ```bash
 show bgp ipv4 vpn summary
 ```
 **Look for:**
-- Neighbor 8.8.8.8: State = Established, PfxSnt > 0
-- Neighbor 2001:db8:9::1: State = Established, PfxSnt > 0
+- Neighbor 172.16.0.7: State = Established, PfxSnt > 0
+- Neighbor fcdd:dd00:108::1 State = Established, PfxSnt > 0
 
 ---
 
-## Step 6: Check detailed advertisement to RRV4
+## Step 5: Check detailed advertisement to RRV4
 ```bash
-show bgp ipv4 vpn neighbors 8.8.8.8 advertised-routes 10.10.1.0/30
+show bgp ipv4 vpn neighbors 172.16.0.7 advertised-routes 10.10.1.0/30
 ```
 **Look for:**
 - Extended Community: RT:65000:10
-- Originator: 1.1.1.1
-- Remote label value
-- Next-hop: 1.1.1.1 (due to `next-hop-self`)
+- Originator: 172.16.0.1
+- Remote SID: fcdd:dd00:101::, sid structure=[32 16 16 0 16 48]
 
 ---
 
-## Step 7: Check detailed advertisement to RRV6
+## Step 6: Check detailed advertisement to RRV6
 ```bash
-show bgp ipv4 vpn neighbors 2001:db8:9::1 advertised-routes 10.10.1.0/30
+show bgp ipv4 vpn neighbors fcdd:dd00:108::1 advertised-routes 10.10.1.0/30
 ```
 **Look for:**
 - Extended Community: RT:65000:10
-- Originator: 1.1.1.1
-- Remote SID: 2001:db8:1::
-- Next-hop: 2001:db8:1::1 (IPv6 due to SRv6)
+- Originator: 172.16.0.1
+- Remote SID: fcdd:dd00:101::, sid structure=[32 16 16 0 16 48]
 
 ---
 
-## Step 8: Verify SRv6 locator and SID allocation
+## Step 7: Verify SRv6 locator and SID allocation
 ```bash
 show segment-routing srv6 locator
 ```
 **Look for:**
 - Status: Up
 - Block length, node length, function bits
-- Prefix: 2001:db8:1::/48
+- Prefix: fcdd:dd00:101::/48
 
 ```bash
 show segment-routing srv6 sid
 ```
 **Look for:** VPN SIDs allocated for VRF RED
+- fcdd:dd00:101:e000::  uDT4        VRF 'RED'           bgp(0)             Loc0       dynamic
 
 ---
 
@@ -131,23 +118,3 @@ debug bgp updates out
 debug bgp vpn label
 debug bgp srv6
 ```
-
----
-
-## Key Configuration Points
-
-### For MPLS VPN:
-- `label vpn export auto` in BGP VRF address-family
-- LDP session to remote PE
-- MPLS label forwarding path established
-
-### For SRv6 VPN:
-- `sid vpn export auto` in BGP VRF address-family
-- `segment-routing srv6 locator Loc0` in BGP VRF
-- `neighbor <rrv6> encapsulation srv6` in global BGP
-- SRv6 locator configured and operational
-
-### For Dual Transport (MPLS + SRv6):
-- Both `label vpn export auto` and `sid vpn export auto`
-- `no srv6-only` in VRF SRv6 configuration
-- Separate route reflectors for each transport type recommended
