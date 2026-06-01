@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Segment Routing IPv6 (SRv6) network using [CONTAINERlab](https://containerlab.dev/) and [FRRouting (FRR)](https://frrouting.org/) nodes to demonstrate [SRv6](https://docs.frrouting.org/en/latest/zebra.html#segment-routing-ipv6) capabilities in a controlled lab environment. This lab provides a practical environment for learning and testing basic SRv6 concepts, including locator blocks, SRv6 transport for BGP L3VPN services, and SRv6 functions and behaviors.
+A Segment Routing IPv6 (SRv6) network using [CONTAINERlab](https://containerlab.dev/) and [FRRouting (FRR)](https://frrouting.org/) nodes to demonstrate [SRv6](https://docs.frrouting.org/en/latest/zebra.html#segment-routing-ipv6) capabilities in a controlled lab environment. This lab provides a practical environment for learning and testing basic SRv6 concepts including locator blocks, SRv6 transport for BGP L3VPN (IPv4 & IPv6) services, and SRv6 functions and behaviors.
 
 ## Requirements
 
@@ -62,14 +62,15 @@ The following IP addresses are assigned to the containerLAB nodes for management
 | p2        | 172.28.1.5/24  |
 | p3        | 172.28.1.6/24  |
 | p4        | 172.28.1.7/24  |
-| rrv4      | 172.28.1.8/24  |
-| rrv6      | 172.28.1.9/24  |
-| c1        | 172.28.1.10/24 |
-| c2        | 172.28.1.11/24 |
+| rrv6      | 172.28.1.8/24  |
+| bdr1      | 172.28.1.15/24 |
+| c1        | 172.28.1.9/24  |
+| c2        | 172.28.1.10/24 |
+| c3        | 172.28.1.11/24 |
 | promtail  | 172.28.1.12/24 |
 | loki      | 172.28.1.13/24 |
-| prometheus| 172.28.1.14/24 |
-| grafana   | 172.28.1.15/24 |
+| grafana   | 172.28.1.14/24 |
+| prometheus| 172.28.1.15/24 |
 
 ## SRv6-based L3VPN Services
 

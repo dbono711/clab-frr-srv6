@@ -90,24 +90,25 @@ topology:
       exec:
         - bash /config/p4.sh
 
-    # ROUTE REFLECTOR
-    ## rrv4
-    rrv4:
+    # BORDER
+    # bdr1
+    bdr1:
       kind: linux
-      mgmt-ipv4: 172.28.1.8
+      mgmt-ipv4: 172.28.1.15
       binds:
         - logs:/etc/frr/logs
-        - rrv4/daemons:/etc/frr/daemons
-        - rrv4/frr.conf:/etc/frr/frr.conf
-        - rrv4/vtysh.conf:/etc/frr/vtysh.conf
-        - rrv4/rrv4.sh:/config/rrv4.sh
+        - bdr1/daemons:/etc/frr/daemons
+        - bdr1/frr.conf:/etc/frr/frr.conf
+        - bdr1/vtysh.conf:/etc/frr/vtysh.conf
+        - bdr1/bdr1.sh:/config/bdr1.sh
       exec:
-        - bash /config/rrv4.sh
+        - bash /config/bdr1.sh
 
+    # ROUTE REFLECTOR
     # rrv6
     rrv6:
       kind: linux
-      mgmt-ipv4: 172.28.1.9
+      mgmt-ipv4: 172.28.1.8
       binds:
         - logs:/etc/frr/logs
         - rrv6/daemons:/etc/frr/daemons
@@ -122,7 +123,7 @@ topology:
     c1:
       kind: linux
       image: wbitt/network-multitool:alpine-extra
-      mgmt-ipv4: 172.28.1.10
+      mgmt-ipv4: 172.28.1.9
       binds:
         - clients/client1.sh:/tmp/client1.sh
       exec:
@@ -132,60 +133,67 @@ topology:
     c2:
       kind: linux
       image: wbitt/network-multitool:alpine-extra
-      mgmt-ipv4: 172.28.1.11
+      mgmt-ipv4: 172.28.1.10
       binds:
         - clients/client2.sh:/tmp/client2.sh
       exec:
         - bash /tmp/client2.sh
 
+    # c3
+    c3:
+      kind: linux
+      image: wbitt/network-multitool:alpine-extra
+      mgmt-ipv4: 172.28.1.11
+      binds:
+        - clients/client3.sh:/tmp/client3.sh
+      exec:
+        - bash /tmp/client3.sh
+
     # LOGGING
-    # promtail:
-    #   kind: linux
-    #   mgmt-ipv4: 172.28.1.12
-    #   image: grafana/promtail:3.5.2
-    #   binds:
-    #     - promtail:/etc/promtail
-    #     - logs:/var/log
-    #   cmd: --config.file=/etc/promtail/promtail-config.yml
-    #   ports:
-    #     - 9080:9080
+    promtail:
+      kind: linux
+      mgmt-ipv4: 172.28.1.12
+      image: grafana/promtail:3.5.2
+      binds:
+        - promtail:/etc/promtail
+        - logs:/var/log
+      cmd: --config.file=/etc/promtail/promtail-config.yml
+      ports:
+        - 9080:9080
 
-    # loki:
-    #   kind: linux
-    #   mgmt-ipv4: 172.28.1.13
-    #   image: grafana/loki:3.5.2
-    #   binds:
-    #     - loki:/etc/loki
-    #   cmd: --config.file=/etc/loki/loki-config.yml
-    #   ports:
-    #     - 3100:3100
-
-    # TIME SERIES DATABASE
-    # prometheus:
-    #   kind: linux
-    #   mgmt-ipv4: 172.28.1.14
-    #   image: prom/prometheus:v3.0.0
-    #   binds:
-    #     - prometheus_data:/prometheus
-    #     - ./prometheus:/etc/prometheus/
-    #   cmd:
-    #     - --config.file=/etc/promtail/promtail-config.yml
-    #     - --storage.tsdb.path=/prometheus
-    #   ports:
-    #     - 9090:9090
+    loki:
+      kind: linux
+      mgmt-ipv4: 172.28.1.13
+      image: grafana/loki:3.5.2
+      binds:
+        - loki:/etc/loki
+      cmd: --config.file=/etc/loki/loki-config.yml
+      ports:
+        - 3100:3100
 
     # VISUALIZATION
-    # grafana:
-    #   kind: linux
-    #   mgmt-ipv4: 172.28.1.15
-    #   image: grafana/grafana:12.0.2
-    #   binds:
-    #     - grafana/provisioning:/etc/grafana/provisioning
-    #   ports:
-    #     - 3000:3000
-    #   env:
-    #     GF_SECURITY_ADMIN_PASSWORD: "srv6labadmin"
-    #     GF_USERS_ALLOW_SIGN_UP: "false"
+    grafana:
+      kind: linux
+      mgmt-ipv4: 172.28.1.14
+      image: grafana/grafana:12.0.2
+      binds:
+        - grafana/provisioning:/etc/grafana/provisioning
+      ports:
+        - 3000:3000
+      env:
+        GF_SECURITY_ADMIN_PASSWORD: "srv6labadmin"
+        GF_USERS_ALLOW_SIGN_UP: "false"
+
+    # TIME SERIES DATABASE
+    prometheus:
+      kind: linux
+      image: prom/prometheus:v3.9.1
+      binds:
+        - prometheus:/etc/prometheus/
+      cmd: --config.file=/etc/prometheus/prometheus.yml
+      # cmd: --storage.tsdb.path=/prometheus
+      ports:
+        - 9090:9090
 
   links:
 
@@ -200,10 +208,8 @@ topology:
     - endpoints: ["p2:eth3", "p4:eth1"]
 
     # ROUTE REFLECTOR
-    ## p1-rrv4
-    - endpoints: ["p1:eth4", "rrv4:eth1"]
-    ## p2-rrv6
-    - endpoints: ["p2:eth4", "rrv6:eth1"]
+    ## p1-rrv6
+    - endpoints: ["p1:eth4", "rrv6:eth1"]
 
     # EDGE
     ## pe1-p1
@@ -211,8 +217,14 @@ topology:
     ## pe2-p4
     - endpoints: ["pe2:eth1", "p4:eth3"]
 
+    # BORDER
+    ## bdr1-p2
+    - endpoints: ["bdr1:eth1", "p2:eth2"]
+
     # CLIENTS
     ## c1-pe1
     - endpoints: ["c1:eth1", "pe1:eth3"]
     ## c2-pe2
     - endpoints: ["c2:eth1", "pe2:eth3"]
+    ## c3-pe1
+    - endpoints: ["c3:eth1", "pe1:eth4"]

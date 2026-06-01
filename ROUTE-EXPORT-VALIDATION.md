@@ -42,18 +42,7 @@ show bgp ipv4 vpn summary
 
 ---
 
-## Step 5: Check detailed advertisement to RRV4
-```bash
-show bgp ipv4 vpn neighbors 172.16.0.7 advertised-routes 10.10.1.0/30
-```
-**Look for:**
-- Extended Community: RT:65000:10
-- Originator: 172.16.0.1
-- Remote SID: fcdd:dd00:101::, sid structure=[32 16 16 0 16 48]
-
----
-
-## Step 6: Check detailed advertisement to RRV6
+## Step 5: Check detailed advertisement to RRV6
 ```bash
 show bgp ipv4 vpn neighbors fcdd:dd00:108::1 advertised-routes 10.10.1.0/30
 ```
@@ -64,7 +53,7 @@ show bgp ipv4 vpn neighbors fcdd:dd00:108::1 advertised-routes 10.10.1.0/30
 
 ---
 
-## Step 7: Verify SRv6 locator and SID allocation
+## Step 6: Verify SRv6 locator and SID allocation
 ```bash
 show segment-routing srv6 locator
 ```

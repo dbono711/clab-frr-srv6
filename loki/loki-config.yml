@@ -1,3 +1,4 @@
+---
 auth_enabled: false
 
 server:
@@ -5,12 +6,11 @@ server:
   grpc_listen_port: 9096
 
 common:
-  instance_addr: 127.0.0.1
-  path_prefix: /tmp/loki
+  path_prefix: /loki
   storage:
     filesystem:
-      chunks_directory: /tmp/loki/chunks
-      rules_directory: /tmp/loki/rules
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
   replication_factor: 1
   ring:
     kvstore:
@@ -25,7 +25,7 @@ query_range:
 
 schema_config:
   configs:
-    - from: 2020-10-24
+    - from: 2025-08-01
       store: tsdb
       object_store: filesystem
       schema: v13
@@ -34,13 +34,12 @@ schema_config:
         period: 24h
 
 limits_config:
-  allow_structured_metadata: false
+  allow_structured_metadata: true
   retention_period: 168h # set retention period to 7 days
-  ingestion_rate_mb: 10 # increase the ingestion rate (default is 4 MB/s)
-  ingestion_burst_size_mb: 15 # allow short bursts above the rate
-
-# ruler:
-#   alertmanager_url: http://localhost:9093
+  ingestion_rate_mb: 12 # increase the ingestion rate to accommodate streaming logs
+  ingestion_burst_size_mb: 20 # allow larger short bursts above the rate
+  reject_old_samples: true # reject samples older than max_age
+  reject_old_samples_max_age: 168h # reject samples older than retention period
 
 # By default, Loki will send anonymous, but uniquely-identifiable usage and configuration
 # analytics to Grafana Labs. These statistics are sent to https://stats.grafana.org/
@@ -53,4 +52,4 @@ limits_config:
 #
 # If you would like to disable reporting, uncomment the following lines:
 analytics:
-  reporting_enabled: false
+ reporting_enabled: false
