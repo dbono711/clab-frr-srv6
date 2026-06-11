@@ -29,7 +29,7 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets:
-        - '172.19.0.1:8000'
+        - '172.28.1.1:8000'
 
   # - job_name: 'tempo-metrics'
   #   static_configs:

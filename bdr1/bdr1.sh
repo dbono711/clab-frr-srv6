@@ -17,3 +17,8 @@ ip link set sr0 up
 # create internet loopback interface
 ip link add internet0 type dummy
 ip link set internet0 up
+
+# The Linux kernel resets net.vrf.strict_mode to 0 whenever a
+# new VRF is created or the system restarts, which prevents FRR
+# from installing End.DT4
+sysctl -w net.vrf.strict_mode=1

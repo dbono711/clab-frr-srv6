@@ -33,8 +33,142 @@
       "panels": [
         {
           "datasource": {
-            "type": "loki",
-            "uid": "P8E80F9AEF21F6940"
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 0,
+            "y": 1
+          },
+          "id": 28,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count(interface_state{container=\"$Router\", interface=~\"$Interface\"} == 1)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{interface}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total Interfaces UP",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 8,
+            "x": 8,
+            "y": 1
+          },
+          "id": 33,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count(interface_state{container=\"$Router\", interface=~\"$Interface\"} == 0)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{interface}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total Interfaces DOWN",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
           },
           "fieldConfig": {
             "defaults": {
@@ -71,11 +205,11 @@
           },
           "gridPos": {
             "h": 8,
-            "w": 24,
-            "x": 0,
+            "w": 8,
+            "x": 16,
             "y": 1
           },
-          "id": 28,
+          "id": 32,
           "options": {
             "alignValue": "left",
             "legend": {
@@ -95,17 +229,16 @@
           "pluginVersion": "12.0.2",
           "targets": [
             {
-              "direction": "backward",
-              "disableTextWrap": false,
-              "editorMode": "builder",
-              "expr": "interface_state{container=\"$Router\", interface=~\"$Interface\"}",
-              "fullMetaSearch": false,
-              "includeNullMetadata": true,
+              "datasource": {
+                "type": "prometheus",
+                "uid": "PBFA97CFB590B2093"
+              },
+              "editorMode": "code",
+              "expr": "{container=\"$Router\", interface=~\"$Interface\"}",
+              "interval": "",
               "legendFormat": "{{interface}}",
-              "queryType": "range",
               "range": true,
-              "refId": "A",
-              "useBackend": false
+              "refId": "A"
             }
           ],
           "title": "Interface State",
@@ -186,10 +319,10 @@
             ]
           },
           "gridPos": {
-            "h": 7,
+            "h": 8,
             "w": 24,
             "x": 0,
-            "y": 185
+            "y": 269
           },
           "id": 17,
           "options": {
@@ -402,11 +535,10 @@
             "legend": {
               "calcs": [
                 "min",
-                "max",
-                "last"
+                "max"
               ],
               "displayMode": "table",
-              "placement": "bottom",
+              "placement": "right",
               "showLegend": true
             },
             "tooltip": {
@@ -485,7 +617,7 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 7,
+            "h": 6,
             "w": 24,
             "x": 0,
             "y": 3
@@ -602,7 +734,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 50
+            "y": 193
           },
           "id": 26,
           "options": {
@@ -759,454 +891,7 @@
         "y": 3
       },
       "id": 11,
-      "panels": [
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "P8E80F9AEF21F6940"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [
-                {
-                  "options": {
-                    "add": {
-                      "color": "green",
-                      "index": 0
-                    },
-                    "del": {
-                      "color": "red",
-                      "index": 1
-                    }
-                  },
-                  "type": "value"
-                }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 5,
-            "x": 0,
-            "y": 4
-          },
-          "id": 24,
-          "options": {
-            "colorMode": "background",
-            "graphMode": "area",
-            "justifyMode": "center",
-            "orientation": "horizontal",
-            "percentChangeColorMode": "standard",
-            "reduceOptions": {
-              "calcs": [],
-              "fields": "/^last_action$/",
-              "values": false
-            },
-            "showPercentChange": false,
-            "textMode": "value",
-            "wideLayout": false
-          },
-          "pluginVersion": "12.0.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
-              },
-              "direction": "backward",
-              "editorMode": "builder",
-              "editorType": "sql",
-              "expr": "",
-              "format": 1,
-              "meta": {
-                "builderOptions": {
-                  "columns": [],
-                  "database": "",
-                  "limit": 1000,
-                  "mode": "list",
-                  "queryType": "table",
-                  "table": ""
-                }
-              },
-              "pluginVersion": "4.13.0",
-              "queryType": "table",
-              "rawSql": "SELECT\n  argMax(JSONExtractString(payload, 'action'),\n    parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp'))) AS last_action,\n  max(parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp'))) AS last_seen\nFROM bmp.gobmp_unicast_prefix_v4\nWHERE\n  JSONExtractBool(payload, 'is_ipv4') = true\n  AND concat(JSONExtractString(payload, 'prefix'), '/', toString(JSONExtractUInt(payload, 'prefix_len'))) = ${prefix_cidr:singlequote}\n",
-              "refId": "A"
-            }
-          ],
-          "title": "Last Prefix Event",
-          "type": "stat"
-        },
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "smooth",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 7,
-            "w": 19,
-            "x": 5,
-            "y": 4
-          },
-          "id": 23,
-          "options": {
-            "legend": {
-              "calcs": [
-                "count"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "hideZeros": false,
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "12.0.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
-              },
-              "editorType": "sql",
-              "format": 1,
-              "meta": {
-                "builderOptions": {
-                  "columns": [],
-                  "database": "",
-                  "limit": 1000,
-                  "mode": "list",
-                  "queryType": "table",
-                  "table": ""
-                }
-              },
-              "pluginVersion": "4.13.0",
-              "queryType": "table",
-              "rawSql": "SELECT\n  toStartOfMinute(parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp'))) AS time,\n  countIf(JSONExtractString(payload, 'action') = 'add') AS adds,\n  countIf(JSONExtractString(payload, 'action') = 'del') AS deletes\nFROM bmp.gobmp_unicast_prefix_v4\nWHERE\n  JSONExtractBool(payload, 'is_ipv4') = true\n  AND $__timeFilter(parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp')))\n  AND concat(JSONExtractString(payload, 'prefix'), '/', toString(JSONExtractUInt(payload, 'prefix_len'))) = ${prefix_cidr:singlequote}\nGROUP BY time\nORDER BY time\n",
-              "refId": "A"
-            }
-          ],
-          "title": "Prefix Adds vs Deletes",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "last_action"
-                },
-                "properties": [
-                  {
-                    "id": "mappings",
-                    "value": [
-                      {
-                        "options": {
-                          "add": {
-                            "color": "green",
-                            "index": 0
-                          },
-                          "del": {
-                            "color": "red",
-                            "index": 1
-                          }
-                        },
-                        "type": "value"
-                      }
-                    ]
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-background"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 24,
-            "x": 0,
-            "y": 28
-          },
-          "id": 22,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true,
-            "sortBy": []
-          },
-          "pluginVersion": "12.0.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
-              },
-              "editorType": "sql",
-              "format": 1,
-              "meta": {
-                "builderOptions": {
-                  "columns": [],
-                  "database": "",
-                  "limit": 1000,
-                  "mode": "list",
-                  "queryType": "table",
-                  "table": ""
-                }
-              },
-              "pluginVersion": "4.13.0",
-              "queryType": "table",
-              "rawSql": "SELECT\n  JSONExtractString(payload, 'prefix') AS prefix,\n  JSONExtractUInt(payload, 'prefix_len') AS prefix_len,\n  argMax(JSONExtractString(payload, 'action'),\n    parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp'))) AS last_action,\n  max(parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp'))) AS last_seen,\n  JSONExtractString(payload, 'peer_ip') AS peer_ip,\n  JSONExtractUInt(payload, 'peer_asn') AS peer_asn,\n  JSONExtractString(payload, 'nexthop') AS next_hop,\n  JSONExtractString(JSONExtractRaw(payload, 'base_attrs'), 'origin') AS origin,\n  JSONExtractUInt(payload, 'origin_as') AS origin_as\nFROM bmp.gobmp_unicast_prefix_v4\nWHERE\n  JSONExtractBool(payload, 'is_ipv4') = true\n  AND concat(JSONExtractString(payload, 'prefix'), '/', toString(JSONExtractUInt(payload, 'prefix_len'))) = ${prefix_cidr:singlequote}\nGROUP BY prefix, prefix_len, peer_ip, peer_asn, next_hop, origin, origin_as\n",
-              "refId": "A"
-            }
-          ],
-          "title": "Prefix History",
-          "transformations": [
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": true,
-                    "field": "last_seen"
-                  }
-                ]
-              }
-            }
-          ],
-          "type": "table"
-        },
-        {
-          "datasource": {
-            "type": "grafana-clickhouse-datasource",
-            "uid": "PDEE91DDB90597936"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "custom": {
-                "align": "auto",
-                "cellOptions": {
-                  "type": "auto"
-                },
-                "inspect": false
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  }
-                ]
-              }
-            },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "status"
-                },
-                "properties": [
-                  {
-                    "id": "mappings",
-                    "value": [
-                      {
-                        "options": {
-                          "add": {
-                            "color": "green",
-                            "index": 0
-                          },
-                          "down": {
-                            "color": "red",
-                            "index": 1
-                          }
-                        },
-                        "type": "value"
-                      }
-                    ]
-                  },
-                  {
-                    "id": "custom.cellOptions",
-                    "value": {
-                      "type": "color-background"
-                    }
-                  }
-                ]
-              }
-            ]
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 24,
-            "x": 0,
-            "y": 36
-          },
-          "id": 30,
-          "options": {
-            "cellHeight": "sm",
-            "footer": {
-              "countRows": false,
-              "fields": "",
-              "reducer": [
-                "sum"
-              ],
-              "show": false
-            },
-            "showHeader": true,
-            "sortBy": []
-          },
-          "pluginVersion": "12.0.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "grafana-clickhouse-datasource",
-                "uid": "PDEE91DDB90597936"
-              },
-              "editorType": "sql",
-              "format": 1,
-              "meta": {
-                "builderOptions": {
-                  "columns": [],
-                  "database": "",
-                  "limit": 1000,
-                  "mode": "list",
-                  "queryType": "table",
-                  "table": ""
-                }
-              },
-              "pluginVersion": "4.13.0",
-              "queryType": "table",
-              "rawSql": "SELECT\n  argMaxIf(\n    JSONExtractString(payload, 'local_ip'),\n    parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp')),\n    JSONExtractString(payload, 'action') = 'add') AS local_ip,\n  JSONExtractString(payload, 'remote_ip') AS remote_ip,\n  JSONExtractUInt(payload, 'remote_asn') AS remote_asn,\n  argMax(JSONExtractString(payload, 'action'),\n    parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp'))) AS status,\n  max(parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp'))) AS last_seen,\n  argMaxIf(\n    JSONExtractUInt(payload, 'local_asn'),\n    parseDateTime64BestEffort(JSONExtractString(payload, 'timestamp')),\n    JSONExtractString(payload, 'action') = 'add') AS local_asn\nFROM bmp.gobmp_parsed_peer\nWHERE JSONExtractString(payload, 'remote_ip') NOT IN ('', '0.0.0.0')\nGROUP BY remote_ip, remote_asn\nHAVING local_ip NOT IN ('', '0.0.0.0')\nORDER BY remote_ip\n",
-              "refId": "A"
-            }
-          ],
-          "title": "Peers",
-          "transformations": [
-            {
-              "id": "sortBy",
-              "options": {
-                "fields": {},
-                "sort": [
-                  {
-                    "desc": true,
-                    "field": "last_seen"
-                  }
-                ]
-              }
-            }
-          ],
-          "type": "table"
-        }
-      ],
+      "panels": [],
       "title": "BGP",
       "type": "row"
     },
@@ -1217,6 +902,19 @@
         "w": 24,
         "x": 0,
         "y": 4
+      },
+      "id": 34,
+      "panels": [],
+      "title": "Segment Routing",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
       },
       "id": 4,
       "panels": [
@@ -1246,7 +944,7 @@
             "h": 9,
             "w": 12,
             "x": 0,
-            "y": 5
+            "y": 569
           },
           "id": 8,
           "options": {
@@ -1318,7 +1016,7 @@
             "h": 9,
             "w": 12,
             "x": 12,
-            "y": 5
+            "y": 569
           },
           "id": 9,
           "options": {
@@ -1377,7 +1075,7 @@
             "h": 8,
             "w": 24,
             "x": 0,
-            "y": 14
+            "y": 578
           },
           "id": 2,
           "options": {
@@ -1423,7 +1121,9 @@
         "allowCustomValue": false,
         "current": {
           "text": "All",
-          "value": "$__all"
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "loki",
@@ -1446,30 +1146,35 @@
         "type": "query"
       },
       {
-        "allowCustomValue": false,
         "current": {
-          "text": "",
-          "value": ""
+          "text": [
+            "clab-frr-srv6-pe1"
+          ],
+          "value": [
+            "clab-frr-srv6-pe1"
+          ]
         },
-        "definition": "label_values(container)",
-        "includeAll": false,
+        "includeAll": true,
         "label": "Router",
+        "multi": true,
         "name": "Router",
-        "options": [],
-        "query": {
-          "qryType": 1,
-          "query": "label_values(container)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "type": "query"
+        "options": [
+          {
+            "selected": true,
+            "text": "clab-frr-srv6-pe1",
+            "value": "clab-frr-srv6-pe1"
+          }
+        ],
+        "query": "clab-frr-srv6-pe1",
+        "type": "custom"
       },
       {
         "allowCustomValue": false,
         "current": {
           "text": "All",
-          "value": "$__all"
+          "value": [
+            "$__all"
+          ]
         },
         "definition": "label_values({container=\"$Router\"},interface)",
         "includeAll": true,
@@ -1485,27 +1190,6 @@
         "refresh": 1,
         "regex": "/eth*.|lo/",
         "type": "query"
-      },
-      {
-        "allowCustomValue": false,
-        "current": {
-          "text": "100.64.0.0/22",
-          "value": "100.64.0.0/22"
-        },
-        "datasource": {
-          "type": "grafana-clickhouse-datasource",
-          "uid": "PDEE91DDB90597936"
-        },
-        "definition": "SELECT DISTINCT\n  concat(JSONExtractString(payload, 'prefix'), '/',\n  toString(JSONExtractUInt(payload, 'prefix_len'))) AS prefix_cidr\nFROM bmp.gobmp_unicast_prefix_v4\nWHERE JSONExtractString(payload, 'prefix') != ''\n  AND JSONExtractUInt(payload, 'prefix_len') > 0\nORDER BY prefix_cidr",
-        "includeAll": false,
-        "label": "Prefix",
-        "name": "prefix_cidr",
-        "options": [],
-        "query": "SELECT DISTINCT\n  concat(JSONExtractString(payload, 'prefix'), '/',\n  toString(JSONExtractUInt(payload, 'prefix_len'))) AS prefix_cidr\nFROM bmp.gobmp_unicast_prefix_v4\nWHERE JSONExtractString(payload, 'prefix') != ''\n  AND JSONExtractUInt(payload, 'prefix_len') > 0\nORDER BY prefix_cidr",
-        "refresh": 1,
-        "regex": "",
-        "sort": 7,
-        "type": "query"
       }
     ]
   },
@@ -1517,5 +1201,5 @@
   "timezone": "browser",
   "title": "Network",
   "uid": "aea4hom8dwetcf",
-  "version": 4
+  "version": 7
 }
