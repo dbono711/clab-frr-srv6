@@ -58,7 +58,6 @@ The following IP addresses are assigned to the containerLAB nodes for management
 | promtail  | 172.28.1.12/24 |
 | loki      | 172.28.1.13/24 |
 | grafana   | 172.28.1.14/24 |
-| prometheus| 172.28.1.15/24 |
 
 ## SRv6-based L3VPN Services
 

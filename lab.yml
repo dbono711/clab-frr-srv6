@@ -184,17 +184,6 @@ topology:
         GF_SECURITY_ADMIN_PASSWORD: "srv6labadmin"
         GF_USERS_ALLOW_SIGN_UP: "false"
 
-    # TIME SERIES DATABASE
-    prometheus:
-      kind: linux
-      image: prom/prometheus:v3.9.1
-      binds:
-        - prometheus:/etc/prometheus/
-      cmd: --config.file=/etc/prometheus/prometheus.yml
-      # cmd: --storage.tsdb.path=/prometheus
-      ports:
-        - 9090:9090
-
   links:
 
     # CORE
