@@ -8,7 +8,7 @@ A Segment Routing IPv6 (SRv6) network using [CONTAINERlab](https://containerlab.
 
 - [CONTAINERlab](https://containerlab.dev/install/)
   - _The [CONTAINERlab](https://containerlab.dev/install/) installation guide outlines various installation methods. This lab assumes all [pre-requisites](https://containerlab.dev/install/#pre-requisites) (including Docker) are met and CONTAINERlab is installed via the [install script](https://containerlab.dev/install/#install-script)._
-- Docker FRR image: `quay.io/frrouting/frr:master` (will be downloaded automatically)
+- Docker FRR image: `quay.io/frrouting/frr:10.7.0` (will be downloaded automatically)
 - Docker Network Multitool image: `wbitt/network-multitool:alpine-extra` (for client nodes) (will be downloaded automatically)
 
 ## Topology
@@ -22,7 +22,7 @@ A Segment Routing IPv6 (SRv6) network using [CONTAINERlab](https://containerlab.
 - The IPv6 interface addresses are allocated from the 2001:c0de:1::/48 subnet and follow the format:
   - 2001:c0de:1:y::z/64, where y and z vary per link
 - SRv6 uSID locators follow the f3216 (32-bit uSID block + 16-bit Node Identifier) format
-- **NOTE: as of release 10.6.1, Flex-Algo is not supported in FRR for SRv6, and thus we are only working with what would technically be Flex-Algo0 (default using SPF). Nonethless, our locator planning schema is taking into account expansion for Flex-Algo support.**
+- **NOTE: as of release 10.7.0, Flex-Algo is not supported in FRR for SRv6, and thus we are only working with what would technically be Flex-Algo0 (default using SPF). Nonethless, our locator planning schema is taking into account expansion for Flex-Algo support.**
 - We will configure Flex-Algo 0 as Locator "MAIN", and will be our working example for the locator schema:
   - fcdd:dd00:01xx::/48, where x is the node identifier (e.g., fcdd:dd00:0101::/48 for pe1)
     - uSID block (32 bits) (fcdd:dd00::/32)

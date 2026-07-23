@@ -7,7 +7,7 @@ mgmt:
 topology:
   kinds:
     linux:
-      image: quay.io/frrouting/frr:10.6.1
+      image: quay.io/frrouting/frr:10.7.0
   nodes:
 
     # PROVIDER EDGE
