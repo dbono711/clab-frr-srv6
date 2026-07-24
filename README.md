@@ -85,6 +85,21 @@ This lab demonstrates SRv6 as a transport for L3VPN services, showcasing how SRv
 - **Route Distinguishers**: VRF routes use router-specific RDs and share the same RT, one per VRF.
 - **End-to-End Service**: The BGP L3VPN control plane exchanges routes between the VRFs, while SRv6 provides the data plane transport across the network
 
+### Global Table SRv6 Note
+
+The lab also includes a scaffold for a **global/default-table SRv6 routing** use case between `pe1` and `bdr1`. In this example, `pe1` originates the client3-connected subnet `10.11.1.0/30` in the default table, and `bdr1` originates the simulated Internet loopback `99.99.99.99/32` in the default table. The BGP configuration on both routers is set up so that FRR allocates SRv6 SIDs for these global-table routes.
+
+In practice, you should be able to observe the expected SRv6 SID allocation and related control-plane state from the configuration on `pe1/frr.conf` and `bdr1/frr.conf`. However, in the current lab environment, **the actual SRv6 service behavior for the default VRF / global table is not functioning end to end**, even though the equivalent SRv6 VPN behavior for non-default VRFs such as `RED` does work.
+
+Stated differently:
+
+- **Working**: SRv6-based L3VPN service behavior for routes imported into VRF `RED`
+- **Not currently working**: SRv6 local service behavior that performs post-decap lookup in the default VRF / global table
+
+This limitation was also observed when bypassing BGP-based global SID export and testing with statically configured SIDs and static SRv6 traffic steering. Packets can be steered correctly across the SRv6 underlay from `pe1` toward `bdr1`, but the expected local behavior tied to the default/global table does not complete successfully on `bdr1`.
+
+For now, treat the global Internet routing over SRv6 portion of the lab as a **control-plane and SID-allocation demonstration**, rather than a fully functioning default-table SRv6 service dataplane example.
+
 ## Monitoring
 
 A logging stack is deployed to collect and aggregate logs from the FRR routers and clients. The logging stack is deployed using [CONTAINERlab](https://containerlab.dev/), [Promtail](https://grafana.com/docs/loki/latest/clients/promtail/), [Loki](https://grafana.com/docs/loki/latest/), and [Grafana](https://grafana.com/).
