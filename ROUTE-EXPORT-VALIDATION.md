@@ -4,23 +4,42 @@ This document validates SRv6-based L3VPN route export and import from the perspe
 
 The goal is to confirm two things from `pe1`:
 
-1. `pe1` correctly exports its locally connected RED VRF routes toward the route reflector.
-2. `pe1` correctly receives and installs remote RED VRF routes originated by `pe2`, including the SRv6 information needed to forward traffic to the remote PE.
+1. `pe1` correctly exports its locally connected VRF routes toward the route reflector.
+2. `pe1` correctly receives and installs remote VRF routes originated by `pe2`, including the SRv6 information needed to forward traffic to the remote PE.
 
-The examples below focus on these prefixes:
+The lab currently uses the **per-VRF** SRv6 VPN service model. Under each BGP VRF process, `sid vpn per-vrf export auto` allocates a single SRv6 VPN service SID per VRF, shared by both IPv4 and IPv6 address families for that VRF.
 
+The examples below focus on validation from `pe1` for both VRFs:
+
+## VRF Summary
+
+### RED
 - Local IPv4 on `pe1`: `10.10.1.0/30`
 - Remote IPv4 learned on `pe1` from `pe2`: `10.10.2.0/30`
 - Local IPv6 on `pe1`: `2001:c0de:10:1::/64`
 - Remote IPv6 learned on `pe1` from `pe2`: `2001:c0de:10:2::/64`
+- RD/RT context:
+  - `pe1` RD `172.16.0.1:10`
+  - `pe2` RD `172.16.0.6:10`
+  - RT `65000:10`
+
+### BLUE
+- Local IPv4 on `pe1`: `10.10.1.5/30`
+- Remote IPv4 learned on `pe1` from `pe2`: `10.10.2.5/30`
+- Local IPv6 on `pe1`: `2001:c0de:10:3::/64`
+- Remote IPv6 learned on `pe1` from `pe2`: `2001:c0de:10:4::/64`
+- RD/RT context:
+  - `pe1` RD `172.16.0.1:20`
+  - `pe2` RD `172.16.0.6:20`
+  - RT `65000:20`
 
 JSON output is used only where the normal FRR CLI output does not expose the SRv6 details we need to validate.
 
-## IPv4
+## RED VRF Validation
 
 ### Local IPv4 client prefix on PE1: `10.10.1.0/30`
 
-This section validates that the client-facing IPv4 prefix connected to `pe1` is present in the RED VRF, imported into BGP, exported into the VPN table, and advertised by `pe1` toward the route reflector.
+This section validates that the client-facing IPv4 prefix connected to `pe1` is present in VRF `RED`, imported into BGP, exported into the VPN table, and advertised by `pe1` toward the route reflector.
 
 #### Step 1: Verify the route exists in the RED VRF routing table
 ```bash
@@ -66,10 +85,9 @@ show segment-routing srv6 sid
 
 **Look for:**
 - A dynamic SID for VRF `RED`
-- An entry similar to:
-  - `fcdd:dd00:101:e000::  uDT4  VRF 'RED'  ...`
+- Because this lab uses the per-VRF model, the same RED service SID is used for both IPv4 and IPv6 VPN service handling for that VRF
 
-This confirms `pe1` has allocated the local SRv6 service SID used for VPN route export for IPv4 reachability.
+This confirms `pe1` has allocated the local SRv6 VPN service SID used for RED VRF route export.
 
 #### Step 5: Verify PE1 is advertising the route toward the route reflector
 ```bash
@@ -120,8 +138,6 @@ show ip route vrf RED 10.10.2.0/30 json
 JSON is required here because the standard route display does not show the `seg6` encapsulation details needed to prove how traffic will be forwarded.
 
 This confirms that `pe1` did not merely learn the remote route in BGP; it also installed the route with the expected SRv6 forwarding behavior toward the service endpoint advertised by `pe2`.
-
-## IPv6
 
 ### Local IPv6 client prefix on PE1: `2001:c0de:10:1::/64`
 
@@ -207,20 +223,157 @@ show ipv6 route vrf RED 2001:c0de:10:2::/64 json
 
 This confirms that `pe1` has installed the remote IPv6 route into the VRF with SRv6 forwarding behavior, not just learned it in BGP.
 
+## BLUE VRF Validation
+
+The BLUE VRF follows the same validation flow as RED, but uses a different client-facing subnet, RD, and RT.
+
+### Local IPv4 client prefix on PE1: `10.10.1.5/30`
+
+#### Step 1: Verify the route exists in the BLUE VRF routing table
+```bash
+show ip route vrf BLUE 10.10.1.5/30
+```
+
+**Look for:**
+- A connected route for `10.10.1.5/30`
+- The expected client-facing interface, such as `eth3.20`
+
+#### Step 2: Verify the route is present in the BLUE VRF BGP table
+```bash
+show bgp vrf BLUE ipv4 unicast 10.10.1.5/30
+```
+
+**Look for:**
+- Prefix `10.10.1.5/30`
+- Local best-path selection
+
+#### Step 3: Verify the route is exported into the global VPNv4 table
+```bash
+show bgp ipv4 vpn rd 172.16.0.1:20 10.10.1.5/30
+```
+
+**Look for:**
+- Route distinguisher `172.16.0.1:20`
+- Route target `RT:65000:20`
+- Valid exported VPN path with SRv6 service information
+
+#### Step 4: Verify the SRv6 SID allocated on PE1 for the BLUE VRF service
+```bash
+show segment-routing srv6 sid
+```
+
+**Look for:**
+- A dynamic SID for VRF `BLUE`
+- Because this lab uses the per-VRF model, the same BLUE service SID is used for both IPv4 and IPv6 VPN service handling for that VRF
+
+#### Step 5: Verify PE1 is advertising the route toward the route reflector
+```bash
+show bgp ipv4 vpn neighbors 2001:face::8 advertised-routes 10.10.1.5/30
+```
+
+**Look for:**
+- Prefix `10.10.1.5/30`
+- `RT:65000:20`
+- SRv6 service information attached to the advertisement
+
+### Remote IPv4 client prefix seen on PE1: `10.10.2.5/30`
+
+#### Step 1: Verify the remote route is present in the VPNv4 table on PE1
+```bash
+show bgp ipv4 vpn 10.10.2.5/30 json
+```
+
+**Look for:**
+- Prefix `10.10.2.5/30`
+- The remote route distinguisher and BLUE route target
+- SRv6 service information for the route learned from `pe2`
+
+#### Step 2: Verify the remote route is installed in the BLUE VRF RIB/FIB on PE1
+```bash
+show ip route vrf BLUE 10.10.2.5/30 json
+```
+
+**Look for:**
+- Prefix `10.10.2.5/30` installed in VRF `BLUE`
+- BGP as the source of the installed route
+- `seg6` forwarding information in the route entry
+
+### Local IPv6 client prefix on PE1: `2001:c0de:10:3::/64`
+
+#### Step 1: Verify the route exists in the BLUE VRF IPv6 routing table
+```bash
+show ipv6 route vrf BLUE 2001:c0de:10:3::/64
+```
+
+**Look for:**
+- A connected route for `2001:c0de:10:3::/64`
+- The expected client-facing interface for the BLUE VRF attachment
+
+#### Step 2: Verify the route is present in the BLUE VRF IPv6 BGP table
+```bash
+show bgp vrf BLUE ipv6 unicast 2001:c0de:10:3::/64
+```
+
+**Look for:**
+- Prefix `2001:c0de:10:3::/64`
+- A locally originated path selected as best
+
+#### Step 3: Verify the route is exported into the global VPNv6 table
+```bash
+show bgp ipv6 vpn rd 172.16.0.1:20 2001:c0de:10:3::/64
+```
+
+**Look for:**
+- Route distinguisher `172.16.0.1:20`
+- Route target `RT:65000:20`
+- Valid exported VPN path with SRv6 service information
+
+#### Step 4: Verify PE1 is advertising the route toward the route reflector
+```bash
+show bgp ipv6 vpn neighbors 2001:face::8 advertised-routes 2001:c0de:10:3::/64
+```
+
+**Look for:**
+- Prefix `2001:c0de:10:3::/64`
+- `RT:65000:20`
+- SRv6 service information attached to the advertisement
+
+### Remote IPv6 client prefix seen on PE1: `2001:c0de:10:4::/64`
+
+#### Step 1: Verify the remote route is present in the VPNv6 table on PE1
+```bash
+show bgp ipv6 vpn 2001:c0de:10:4::/64 json
+```
+
+**Look for:**
+- Prefix `2001:c0de:10:4::/64`
+- The remote route distinguisher and BLUE route target
+- SRv6 service information carried with the remote advertisement
+
+#### Step 2: Verify the remote route is installed in the BLUE VRF IPv6 routing table on PE1
+```bash
+show ipv6 route vrf BLUE 2001:c0de:10:4::/64 json
+```
+
+**Look for:**
+- Prefix `2001:c0de:10:4::/64` installed in VRF `BLUE`
+- BGP as the source of the route
+- `seg6` forwarding information identifying the SRv6 segment list used for forwarding
+
 # Validation Summary
 
-From the `pe1` point of view, successful validation should show this flow:
+From the `pe1` point of view, successful validation should show this flow for each VRF:
 
-1. A local client prefix exists in VRF `RED`.
+1. A local client prefix exists in the VRF routing table.
 2. The local route is redistributed into the VRF BGP table.
 3. The route is exported into the global VPN table with the correct RD/RT and SRv6 service information.
 4. `pe1` advertises the local VPN route toward the route reflector.
 5. `pe1` receives remote VPN routes from `pe2` with the expected SRv6 attributes.
-6. `pe1` installs those remote routes into VRF `RED` with `seg6` forwarding information pointing to the remote service SID.
+6. `pe1` installs those remote routes into the matching VRF with `seg6` forwarding information pointing to the remote service SID.
 
 For remote-route validation, the most important proof points on `pe1` are:
 
 - The VPN route is present in BGP.
 - The remote SRv6 service information is visible in the BGP entry.
-- The route is installed in the RED VRF routing table.
+- The route is installed in the correct VRF routing table.
 - The installed route contains the expected `seg6` forwarding data.
