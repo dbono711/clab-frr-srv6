@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# create VLAN interface for RED service
+# RED
+## create VLAN interface for RED service
 ip link add name eth1.10 link eth1 type vlan id 10
 ip link set dev eth1.10 up
 
@@ -11,3 +12,16 @@ ip route add 10.10.2.0/30 via 10.10.1.1
 ## IPv6
 ip addr add 2001:c0de:10:1::2/64 dev eth1.10
 ip route add 2001:c0de:10:2::/64 via 2001:c0de:10:1::1
+
+# BLUE
+## create VLAN interface for BLUE service
+ip link add name eth1.20 link eth1 type vlan id 20
+ip link set dev eth1.20 up
+
+## IPv4
+ip addr add 10.10.1.6/30 dev eth1.20
+ip route add 10.10.2.4/30 via 10.10.1.5
+
+## IPv6
+ip addr add 2001:c0de:10:3::2/64 dev eth1.20
+ip route add 2001:c0de:10:4::/64 via 2001:c0de:10:3::1

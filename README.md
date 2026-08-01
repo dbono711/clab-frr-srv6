@@ -22,7 +22,7 @@ A Segment Routing IPv6 (SRv6) network using [CONTAINERlab](https://containerlab.
 - The IPv6 interface addresses are allocated from the 2001:c0de:1::/48 subnet and follow the format:
   - 2001:c0de:1:y::z/64, where y and z vary per link
 - SRv6 uSID locators follow the f3216 (32-bit uSID block + 16-bit Node Identifier) format
-- **NOTE: as of release 10.7.0, Flex-Algo is not supported in FRR for SRv6, and thus we are only working with what would technically be Flex-Algo0 (default using SPF). Nonethless, our locator planning schema is taking into account expansion for Flex-Algo support.**
+- **NOTE: as of release 10.7.0, Flex-Algo is not supported in FRR for SRv6, and thus we are only working with what would technically be Flex-Algo 0 (default using SPF/IGP Metric). Nonethless, our locator schema is taking into account expansion for Flex-Algo support.**
 - We will configure Flex-Algo 0 as Locator "MAIN", and will be our working example for the locator schema:
   - fcdd:dd00:01xx::/48, where x is the node identifier (e.g., fcdd:dd00:0101::/48 for pe1)
     - uSID block (32 bits) (fcdd:dd00::/32)
@@ -76,14 +76,36 @@ This lab demonstrates SRv6 as a transport for L3VPN services, showcasing how SRv
 - **SRv6 Locators**: Each SRv6 particpating router (pe1 and pe2) have a unique SRv6 locator block that serves as the foundation for SRv6 functions
 - **uSID Format**: The lab uses micro-segment identifiers (uSID) with block-len 32, node-len 16, func-bits 16 format for efficient segment encoding
 - **SRv6 Encapsulation Behavior**: The main BGP process includes `segment-routing srv6` with `locator MAIN` and `encap-behavior H_Encaps_Red` configuration, which defines how VPN traffic is encapsulated into SRv6 packets. The `H_Encaps_Red` behavior specifically indicates that the router performs SRv6 header encapsulation with reduced SRH (Segment Routing Header) for VPN traffic
-- **VPN SID Generation**: Both 'per-vrf' and 'per-af' SID configuration is possible to automatically generate SRv6 SIDs for VPN services, however, they are mutually exclusive. In this lab we are using the 'per-af' approach with the `sid vpn export auto` command configured under `address-family ipv4 unicast` and `address-family ipv6 unicast` for the BGP VRF process. Conversely, if we were using the 'per-vrf' approach instead, the command `sid vpn per-vrf export auto` would be configured under each BGP VRF process to automatically generate SRv6 SIDs for VPN services for all address families.
+- **BGP VPN SID Generation**: Both 'per-vrf' (generates a SID per VRF covering uDT46 behavior for both IPv4 and IPv6 address families) and 'per-af' (generates a SID per address family for uDT4 and uDT6 behavior respectively) SID configuration is possible to automatically generate SRv6 SIDs for VPN services, however, they are mutually exclusive. In this lab we are using the 'per-vrf' approach with the `sid vpn per-vrf export auto` command configured under each BGP VRF process to automatically generate SRv6 SIDs for VPN services for all address families. Conversely, if we were using the 'per-af' approach instead, the `sid vpn export auto` command would be configured under `address-family ipv4 unicast` and `address-family ipv6 unicast` for the BGP VRF process.
+
+The following table documents the intended Flex-Algo-to-locator mapping for future expansion. At present, FRR SRv6 support in this lab is limited to Flex-Algo `0`, and FRR cannot yet advertise more than one SRv6 locator in IS-IS. This table is therefore a planning reference for the locator schema rather than a fully implemented feature set.
+
+| Flex-Algo | Metric Type | Link Affinity / Color | Participating Nodes | Locator | Description |
+|-----------|-------------|-----------------------|---------------------|---------|-------------|
+| 0 | IGP metric / SPF | None | `pe1`, `pe2`, `p1`, `p2`, `p3`, `p4`, `rrv6`, `bdr1` | `MAIN` (`fcdd:dd00:01xx::/48`) | Default underlay computation and the only SRv6 locator model currently implemented in FRR for this topology. |
 
 ### BGP L3VPN Setup
 
-- **VRF Configuration**: The RED VRF is configured on both PE routers (pe1 and pe2) for IPv4/IPv6 unicast address family.
-- **Client Connectivity**: Clients c1 and c2 connect to pe1 and pe2 respectively through VLAN interfaces assigned to the RED VRF.
-- **Route Distinguishers**: VRF routes use router-specific RDs and share the same RT, one per VRF.
-- **End-to-End Service**: The BGP L3VPN control plane exchanges routes between the VRFs, while SRv6 provides the data plane transport across the network
+- **VRF Configuration**: The RED and BLUE VRFs are configured on both PE routers (pe1 and pe2) for IPv4/IPv6 unicast address family.
+- **Client Connectivity**: Clients c1 and c2 connect to pe1 and pe2 respectively through VLAN interfaces assigned to both VRFs: VLAN 10 for RED and VLAN 20 for BLUE.
+- **Route Distinguishers and Route Targets**: Each VRF uses router-specific RDs and a shared RT per VRF across the PEs. In this lab, RED uses `*:10` / `65000:10`, and BLUE uses `*:20` / `65000:20`.
+- **Per-VRF SRv6 Service Model**: Each VRF BGP process uses `sid vpn per-vrf export auto`, which allocates one SRv6 VPN service SID per VRF covering both IPv4 and IPv6 address families.
+- **End-to-End Service**: The BGP L3VPN control plane exchanges routes between matching VRFs on the PEs, while SRv6 provides the data plane transport across the network.
+
+### Global Table SRv6 Note
+
+The lab also includes a scaffold for a **global/default-table SRv6 routing** use case between `pe1` and `bdr1`. In this example, `pe1` originates the client3-connected subnet `10.11.1.0/30` in the default table, and `bdr1` originates the simulated Internet loopback `99.99.99.99/32` in the default table. The BGP configuration on both routers is set up so that FRR allocates SRv6 SIDs for these global-table routes.
+
+In practice, you should be able to observe the expected SRv6 SID allocation and related control-plane state from the configuration on `pe1/frr.conf` and `bdr1/frr.conf`. However, in the current lab environment, **the actual SRv6 service behavior for the 'default' VRF / global table is not functioning end to end**.
+
+Stated differently:
+
+- **Working**: SRv6-based L3VPN service behavior for routes imported into VRFs such as `RED` and `BLUE`
+- **Not currently working**: SRv6 local service behavior that performs post-decap lookup in the default VRF / global table
+
+This limitation was also observed when bypassing BGP-based global SID export and testing with statically configured SIDs and static SRv6 traffic steering. Packets can be steered correctly across the SRv6 underlay from `pe1` toward `bdr1`, but the expected local behavior tied to the default/global table does not complete successfully on `bdr1`.
+
+For now, treat the global Internet routing over SRv6 portion of the lab as a **control-plane and SID-allocation demonstration**, rather than a fully functioning default-table SRv6 service dataplane example.
 
 ## Monitoring
 
