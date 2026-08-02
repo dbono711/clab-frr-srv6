@@ -105,6 +105,8 @@ Stated differently:
 
 This limitation was also observed when bypassing BGP-based global SID export and testing with statically configured SIDs and static SRv6 traffic steering. Packets can be steered correctly across the SRv6 underlay from `pe1` toward `bdr1`, but the expected local behavior tied to the default/global table does not complete successfully on `bdr1`.
 
+Based on the current zebra/kernel error output, a likely root cause is that FRR's SRv6 local-service install path expects the target routing table to have an associated Linux VRF device. That assumption works for non-default VRFs such as `RED` and `BLUE`, but appears to fail for the global table (`vrf 0`, table `254`), which does not have a corresponding VRF device.
+
 For now, treat the global Internet routing over SRv6 portion of the lab as a **control-plane and SID-allocation demonstration**, rather than a fully functioning default-table SRv6 service dataplane example.
 
 ## Monitoring
