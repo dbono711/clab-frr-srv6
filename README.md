@@ -109,6 +109,126 @@ Based on the current zebra/kernel error output, a likely root cause is that FRR'
 
 For now, treat the global Internet routing over SRv6 portion of the lab as a **control-plane and SID-allocation demonstration**, rather than a fully functioning default-table SRv6 service dataplane example.
 
+## Manual SRv6 Traffic Steering (No BGP Overlay)
+
+The RED and BLUE services above rely on a BGP L3VPN overlay: the PEs learn each other's prefixes through the route reflector, FRR auto-allocates the service SID, and the path the traffic takes across the core is whatever IS-IS SPF happens to choose. This is a great model for production (sans anything advanced such as ODN or SR-TE policy or other FlexAlgo's), but you never get to see the segment list, and you cannot choose the path.
+
+[`scripts/srv6_pseudo_controller.py`](scripts/srv6_pseudo_controller.py) exists to expose that mechanism. It is a standalone operator tool (not part of the deployed topology, and not started by `clab deploy`) that provisions an additional VRF service against an already-running lab with **no BGP involvement at all**:
+
+- **No overlay control plane.** Nothing is advertised and nothing is learned. Both PEs get a statically configured SID and a static route.
+- **The operator picks the path.** Rather than accepting the SPF result, you select the exact sequence of P routers the traffic will traverse, and those hops are encoded directly into a uSID segment list.
+- **Forward and reverse paths are chosen independently**, so asymmetric routing is a single menu selection away.
+
+The only thing still doing work underneath is IS-IS, which distributes each node's `/48` locator so that plain IPv6 longest-prefix-match forwarding can carry the packet from hop to hop. That is the point of the exercise: SRv6 transport needs an IGP and nothing else.
+
+### Running it
+
+The lab must already be deployed. The script is pure Python 3 standard library — no `pip install`, no virtualenv:
+
+```shell
+python3 scripts/srv6_pseudo_controller.py --dry-run
+```
+
+It probes both PEs for what is already in use, then interviews you for a VRF name, a VLAN ID, an address-family mode, whether to use `H_Encaps_Red`, and the forward and reverse core paths. The Linux VRF table ID, the SID function, and the IPv4 `/30` and IPv6 `/64` subnet pairs are allocated automatically from the free space, so a new service cannot collide with RED, BLUE, or a service you created earlier.
+
+Because the topology only lets `pe1` reach `p1` and `pe2` reach `p4`, there are exactly two paths in each direction, and they are offered as a menu rather than typed:
+
+```text
+Forward transit path from pe1 to pe2
+  1) p1,p2,p4 (default)
+  2) p1,p3,p4
+Select [1-2]:
+```
+
+Answer `--dry-run` (or `y` at the "Dry run only?" prompt) and the tool prints every `ip` and `vtysh` command it would issue, annotated by node, without touching anything. Answer `n` and it applies them to `pe1`, `pe2`, `c1` and `c2` in order.
+
+A first service on a freshly deployed lab resolves like this:
+
+```text
+=== Service Summary ===
+VRF: GREEN
+VLAN: 30
+AF mode: dual
+VRF table: 30
+SID function: fe00
+PE1 IPv4 subnet: 10.10.1.8/30
+PE2 IPv4 subnet: 10.10.2.8/30
+PE1 IPv6 subnet: 2001:c0de:10:5::/64
+PE2 IPv6 subnet: 2001:c0de:10:6::/64
+Forward core nodes: p1,p2,p4
+Reverse core nodes: p4,p3,p1
+Forward segment: fcdd:dd00:102:103:105:106:fe00::
+Reverse segment: fcdd:dd00:105:104:102:101:fe00::
+```
+
+The two commands that make the steering happen are a static SID on the egress PE and a static route on the ingress PE:
+
+```text
+sid fcdd:dd00:101:fe00::/64 locator MAIN behavior uDT46 vrf GREEN
+ip route 10.10.2.8/30 sr0 vrf GREEN segments fcdd:dd00:102:103:105:106:fe00:: nexthop-vrf default
+```
+
+Note that `segments` takes a **single** value. With uSID, one IPv6 address is the entire segment list.
+
+### Shift-and-Forward: How the Packet Crosses the Core
+
+Take the forward segment from the example above:
+
+```text
+fcdd:dd00:102:103:105:106:fe00::
+```
+
+Written out as its eight 16-bit groups, that address is not an address in the ordinary sense — it is a **uSID carrier**, a container holding the whole path:
+
+| Bits | Value | Meaning |
+|------|-------|---------|
+| 0-31 | `fcdd:dd00` | uSID block, common to the whole domain |
+| 32-47 | `0102` | `p1` |
+| 48-63 | `0103` | `p2` |
+| 64-79 | `0105` | `p4` |
+| 80-95 | `0106` | `pe2` |
+| 96-111 | `fe00` | the `uDT46` service function on `pe2` |
+| 112-127 | `0000` | end of carrier (unused slot) |
+
+`pe1` does not appear in the list, because `pe1` is the node doing the encapsulation. After the 32-bit block there are six 16-bit slots, so up to six uSIDs fit in a single address (this path uses five and leaves one empty).
+
+When `c1` sends a packet to `10.10.2.10`, `pe1` matches the static route, pushes an outer IPv6 header with that carrier as the destination address, and forwards. Each core node then performs the **uN (shift-and-forward)** behavior. It recognizes the active uSID as its own, **shifts the remaining uSIDs 16 bits to the left**, zero-fills on the right, and forwards on a normal IPv6 lookup of the new destination:
+
+| Node | Destination address on arrival | Active uSID | Action | Destination address on departure |
+|------|-------------------------------|-------------|--------|----------------------------------|
+| `pe1` | *(inner packet from `c1`)* | — | Encapsulate: push outer IPv6 header | `fcdd:dd00:102:103:105:106:fe00::` |
+| `p1` | `fcdd:dd00:102:103:105:106:fe00::` | `0102` (self) | uN: shift left, forward toward `0103` | `fcdd:dd00:103:105:106:fe00::` |
+| `p2` | `fcdd:dd00:103:105:106:fe00::` | `0103` (self) | uN: shift left, forward toward `0105` | `fcdd:dd00:105:106:fe00::` |
+| `p4` | `fcdd:dd00:105:106:fe00::` | `0105` (self) | uN: shift left, forward toward `0106` | `fcdd:dd00:106:fe00::` |
+| `pe2` | `fcdd:dd00:106:fe00::` | `0106` (self), then `fe00` | `uDT46`: decapsulate, look up the inner packet in VRF `GREEN` | *(inner packet to `c2`)* |
+
+Three things are worth drawing out:
+
+- **There is no Segment Routing Header.** The entire path travels in the 128-bit destination address. This is what the overview means by "not even SRH required due to use of uSID with reduced encapsulation" — for six hops or fewer, the address *is* the segment list, and the packet carries no SR extension header at all.
+- **Every transit lookup is ordinary IPv6 forwarding.** `p1`, `p2` and `p4` hold no per-path state, no tunnel, and no signaling session. They match `fcdd:dd00:103::/48` in the IS-IS-learned routing table exactly as they would any other prefix. The path is state in the *packet*, not in the network.
+- **The last uSID is a function, not a node.** `fe00` is not a router; it is a local instruction on `pe2`, bound by the `static-sids` stanza to `uDT46` and VRF `GREEN`. Reaching it is what tells `pe2` to strip the outer header and resolve the inner packet in that VRF's table.
+
+### Watching It Happen
+
+Because the destination address is rewritten at every hop, the shift is directly observable on the wire. `p2` connects to `p4` on `eth3` (see `lab.yml`), so capturing there shows the carrier already shortened by two uSIDs:
+
+```shell
+sudo ip netns exec clab-frr-srv6-p2 tcpdump -nni eth3 ip6
+```
+
+Generate traffic from `c1` on the new service and you should see the outer destination as `fcdd:dd00:105:106:fe00::` — `0102` and `0103` consumed by `p1` and `p2` respectively:
+
+```shell
+docker exec -it clab-frr-srv6-c1 ping -c 5 10.10.2.10
+```
+
+To confirm the control-plane and forwarding state on the PEs themselves, follow the same pattern used in [ROUTE-EXPORT-VALIDATION.md](ROUTE-EXPORT-VALIDATION.md), checking that the route installs in the VRF with the expected `seg6` encapsulation:
+
+```shell
+docker exec -it clab-frr-srv6-pe1 vtysh -c "show ip route vrf GREEN 10.10.2.8/30 json"
+docker exec -it clab-frr-srv6-pe2 vtysh -c "show segment-routing srv6 sid"
+```
+
 ## Monitoring
 
 A logging stack is deployed to collect and aggregate logs from the FRR routers and clients. The logging stack is deployed using [CONTAINERlab](https://containerlab.dev/), [Promtail](https://grafana.com/docs/loki/latest/clients/promtail/), [Loki](https://grafana.com/docs/loki/latest/), and [Grafana](https://grafana.com/).
