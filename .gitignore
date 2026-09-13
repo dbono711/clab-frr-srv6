@@ -7,3 +7,4 @@ clab-*
 logs/*.log
 logs/positions.yaml
 setup.log
+.zed/
